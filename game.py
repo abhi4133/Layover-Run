@@ -8,7 +8,12 @@ pygame.init()
 
 # Window setup
 WIDTH, HEIGHT = 1000, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+is_fullscreen = True
+try:
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
+except pygame.error:
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    is_fullscreen = False
 pygame.display.set_caption("Layover Run")
 
 # Parallax background setup
@@ -162,6 +167,17 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+
+            if event.key == pygame.K_F11:
+                is_fullscreen = not is_fullscreen
+                if is_fullscreen:
+                    try:
+                        screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
+                    except pygame.error:
+                        screen = pygame.display.set_mode((WIDTH, HEIGHT))
+                        is_fullscreen = False
+                else:
+                    screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
             if game["game_over"] or game["won"]:
                 if event.key == pygame.K_r:

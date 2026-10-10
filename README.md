@@ -19,6 +19,8 @@ Layover Run is an airport-themed endless runner where the player has only **7 mi
 | `Space` / `↑` | Jump |
 | `↓` | Slide |
 | `R` | Restart the game |
+| `F11` | Toggle Fullscreen |
+| `Esc` | Quit the game |
 
 ## 🕹️ Gameplay Instructions
 1. Start running through the airport terminal.
