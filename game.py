@@ -43,6 +43,44 @@ parallax_layers = [
     {"surf": floor_img, "speed": 1.00}, # Foreground moving walkway railing & floor
 ]
 
+# Avatar animation frames setup
+PLAYER_W = 48
+PLAYER_H = 70
+
+def load_avatar_frame(filename):
+    candidates = [
+        os.path.join(base_dir, "Assets", "Avatar", filename),
+        os.path.join(base_dir, "Hackathon", "Assets", "Avatar", filename),
+        os.path.join("Assets", "Avatar", filename),
+        os.path.join("Hackathon", "Assets", "Avatar", filename),
+    ]
+    path = next((p for p in candidates if os.path.exists(p)), candidates[0])
+    raw = pygame.image.load(path).convert_alpha()
+    bbox = raw.get_bounding_rect()
+    return raw.subsurface(bbox).copy()
+
+avatar_raw_1 = load_avatar_frame("AA1.png")
+avatar_raw_2 = load_avatar_frame("AA2.png")
+avatar_raw_3 = load_avatar_frame("AA3.png")
+
+avatar_frame_1 = pygame.transform.smoothscale(avatar_raw_1, (PLAYER_W, PLAYER_H))
+avatar_frame_2 = pygame.transform.smoothscale(avatar_raw_2, (PLAYER_W, PLAYER_H))
+avatar_frame_3 = pygame.transform.smoothscale(avatar_raw_3, (PLAYER_W, PLAYER_H))
+
+avatar_run_frames = [
+    avatar_frame_1,
+    avatar_frame_3,
+    avatar_frame_2,
+    avatar_frame_3,
+]
+
+# Slide frame: tilted running frame fitting slide height
+slide_rot = pygame.transform.rotozoom(avatar_run_frames[0], -40, 1.0)
+slide_h = 42
+slide_w = int(slide_rot.get_width() * (slide_h / slide_rot.get_height()))
+avatar_slide_frame = pygame.transform.smoothscale(slide_rot, (slide_w, slide_h))
+
+
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("arial", 26)
 big_font = pygame.font.SysFont("arial", 48, bold=True)
@@ -75,6 +113,7 @@ def reset_game():
         "game_over": False,
         "won": False,
         "bg_scroll": 0.0,
+        "anim_timer": 0.0,
     }
 
 game = reset_game()
@@ -83,23 +122,13 @@ def draw_text(text, x, y, color=BLACK, font_obj=font):
     image = font_obj.render(text, True, color)
     screen.blit(image, (x, y))
 
-def draw_player(rect, sliding):
-    # Simple character drawn without external assets
-    pygame.draw.circle(
-        screen, YELLOW,
-        (rect.centerx, rect.top + 13), 13
-    )
-    pygame.draw.rect(
-        screen, BLUE,
-        (rect.x + 5, rect.top + 27,
-         rect.width - 10, rect.height - 30),
-        border_radius=6
-    )
-    pygame.draw.line(
-        screen, BLACK,
-        (rect.centerx, rect.bottom - 4),
-        (rect.centerx - 12, rect.bottom + 8), 5
-    )
+def draw_player(rect, sliding, frame_idx=0):
+    if sliding:
+        surf = avatar_slide_frame
+    else:
+        surf = avatar_run_frames[frame_idx % len(avatar_run_frames)]
+    surf_rect = surf.get_rect(midbottom=(rect.centerx, rect.bottom))
+    screen.blit(surf, surf_rect)
 
 def draw_background(offset):
     # Base dark fill
@@ -202,6 +231,10 @@ while running:
         # Scroll background as player runs along
         game["bg_scroll"] += game["speed"] * dt
 
+        # Animate running avatar
+        anim_speed = 9.0 * (game["speed"] / 350.0)
+        game["anim_timer"] += anim_speed * dt
+
         if game["jumping"]:
             game["velocity_y"] += 1700 * dt
             game["player_y"] += game["velocity_y"] * dt
@@ -239,7 +272,7 @@ while running:
         player_y = game["player_y"] + (28 if sliding else 0)
 
         player_rect = pygame.Rect(
-            PLAYER_X, int(player_y), 48, player_h
+            PLAYER_X, int(player_y), PLAYER_W, player_h
         )
 
         for boost in game["boosts"]:
@@ -304,8 +337,9 @@ while running:
     sliding = now < game["sliding_until"]
     ph = 42 if sliding else 70
     py = game["player_y"] + (28 if sliding else 0)
-    player_rect = pygame.Rect(PLAYER_X, int(py), 48, ph)
-    draw_player(player_rect, sliding)
+    player_rect = pygame.Rect(PLAYER_X, int(py), PLAYER_W, ph)
+    frame_idx = int(game["anim_timer"]) % len(avatar_run_frames)
+    draw_player(player_rect, sliding, frame_idx)
 
     # Stats HUD card
     hud_surf = pygame.Surface((180, 105), pygame.SRCALPHA)
