@@ -1,2 +1,51 @@
-# Layover-Run
-This is a simple 2D game created using pygame. Here, you should overcome the obstacles in an airport to catch your next flight.
+# ✈️ Layover Run
+
+A 2D pixel-art endless runner developed using **Python and Pygame**.
+
+## 📖 Project Overview
+Layover Run is an airport-themed endless runner where the player has only **7 minutes to catch a connecting flight**. Navigate through a busy international airport by running, jumping, and sliding past obstacles such as luggage carts, cleaning robots, and airport queues. Collect power-ups and use moving walkways to reach the gate before time runs out.
+
+## ✨ Features
+- Pixel-art airport environment
+- Side-scrolling and parallax backgrounds
+- Obstacle avoidance and character movement
+- Collectibles and speed boosts
+- Timer-based gameplay
+
+## 🎮 Controls
+
+| Key | Action |
+|---|---|
+| `Space` / `↑` | Jump |
+| `↓` | Slide |
+| `R` | Restart the game |
+
+## 🕹️ Gameplay Instructions
+1. Start running through the airport terminal.
+2. Jump over obstacles and slide under barriers.
+3. Avoid luggage carts, cleaning robots, and other hazards.
+4. Collect items and use speed boosts to move faster.
+5. Reach the connecting gate before the 7-minute timer expires.
+
+## 🛠️ Built With
+- Python
+- Pygame
+
+## 🚀 Getting Started
+
+Install Pygame:
+
+```bash
+pip install pygame
+```
+
+Run the game:
+
+```bash
+python main.py
+```
+
+## 🎯 Objective
+Reach your connecting gate before time runs out while avoiding obstacles and maximizing your score.
+
+**Layover Run — Your flight won't wait. Run for it!**
